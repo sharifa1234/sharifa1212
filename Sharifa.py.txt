@@ -1,0 +1,59 @@
+[5:52 AM] SHARIFA MOHAMMED DARWISH AL ZADJALI
+# Import necessary libraries 
+import numpy as np 
+import tensorflow as tf 
+from tensorflow.keras import Sequential 
+from tensorflow.keras.layers import Dense 
+from tensorflow.keras.optimizers import SGD 
+# Load MNIST dataset 
+(X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data() 
+# Preprocess data 
+X_train = X_train.reshape(X_train.shape[0], -1) / 255.0 
+X_test = X_test.reshape(X_test.shape[0], -1) / 255.0 
+# Define MLP models with different activation functions 
+model_sigmoid = Sequential() 
+model_sigmoid.add(Dense(units=64, activation='sigmoid', input_shape=(X_train.shape[1],))) 
+model_sigmoid.add(Dense(units=10, activation='sigmoid')) 
+model_relu = Sequential() 
+model_relu.add(Dense(units=64, activation='relu', input_shape=(X_train.shape[1],))) 
+model_relu.add(Dense(units=10, activation='relu')) 
+model_tanh = Sequential() 
+model_tanh.add(Dense(units=64, activation='tanh', input_shape=(X_train.shape[1],))) 
+model_tanh.add(Dense(units=10, activation='tanh')) 
+# Compile models 
+model_sigmoid.compile(optimizer=SGD(lr=0.1), loss='sparse_categorical_crossentropy', metrics=['accuracy']) 
+model_relu.compile(optimizer=SGD(lr=0.1), loss='sparse_categorical_crossentropy', metrics=['accuracy']) 
+model_tanh.compile(optimizer=SGD(lr=0.1), loss='sparse_categorical_crossentropy', metrics=['accuracy']) 
+# Train models 
+history_sigmoid = model_sigmoid.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test)) 
+history_relu = model_relu.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test)) 
+history_tanh = model_tanh.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test)) 
+# Evaluate models 
+sigmoid_loss, sigmoid_acc = model_sigmoid.evaluate(X_test, y_test) 
+relu_loss, relu_acc = model_relu.evaluate(X_test, y_test) 
+tanh_loss, tanh_acc = model_tanh.evaluate(X_test, y_test) 
+# Print test set evaluation metrics 
+print(f'Sigmoid model: loss = {sigmoid_loss:.4f}, accuracy = {sigmoid_acc:.4f}') 
+print(f'ReLU model: loss = {relu_loss:.4f}, accuracy = {relu_acc:.4f}') 
+print(f'Tanh model: loss = {tanh_loss:.4f}, accuracy = {tanh_acc:.4f}') 
+# Plot loss and accuracy curves 
+import matplotlib.pyplot as plt 
+plt.figure(figsize=(12, 6)) 
+plt.subplot(1, 2, 1) 
+plt.plot(history_sigmoid.history['loss'], label='Sigmoid') 
+plt.plot(history_relu.history['loss'], label='ReLU') 
+plt.plot(history_tanh.history['loss'], label='Tanh') 
+plt.title('Loss curve') 
+plt.xlabel('Epoch') 
+plt.ylabel('Loss') 
+plt.legend() 
+plt.subplot(1, 2, 2) 
+plt.plot(history_sigmoid.history['accuracy'], label='Sigmoid') 
+plt.plot(history_relu.history['accuracy'], label='ReLU') 
+plt.plot(history_tanh.history['accuracy'], label='Tanh') 
+plt.title('Accuracy curve') 
+plt.xlabel('Epoch') 
+plt.ylabel('Accuracy') 
+plt.legend() 
+plt.show()
+
